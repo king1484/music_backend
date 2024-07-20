@@ -7,6 +7,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import dotenv from "dotenv";
 import { searchMusics, getSuggestions } from "node-youtube-music";
+import axios from "axios";
 
 dotenv.config();
 
@@ -99,8 +100,8 @@ export async function getInfo(videoId) {
   ).then((r) => r.json());
 }
 
-app.post("/song", async (req, res) => {
-  const { id } = req.body;
+app.get("/song", async (req, res) => {
+  const id = req.query.id;
   const data = await getInfo(id);
   const sortedAudio = data.streamingData.adaptiveFormats
     .filter((f) => f.mimeType.includes("audio"))
@@ -110,7 +111,36 @@ app.post("/song", async (req, res) => {
     bitrate,
     mimeType,
   }));
-  res.send(finalAudios);
+  res.setHeader("Content-Type", "audio/mpeg");
+
+  const finalUrl = finalAudios[0].url;
+
+  axios({
+    method: "get",
+    url: finalUrl,
+    responseType: "stream",
+    headers: req.headers["range"] ? { range: req.headers["range"] } : undefined,
+  })
+    .then((response) => {
+      if (req.headers["range"]) {
+        res.status(206);
+        res.set({
+          "Content-Range": response.headers["content-range"],
+          "Accept-Ranges": response.headers["accept-ranges"],
+          "Content-Length": response.headers["content-length"],
+          "Content-Type": response.headers["content-type"],
+        });
+      } else {
+        res.set({
+          "Content-Type": response.headers["content-type"],
+        });
+      }
+      response.data.pipe(res);
+    })
+    .catch((error) => {
+      console.error(error);
+      res.status(500).send("Failed to stream audio");
+    });
 });
 
 app.post("/history", async (req, res) => {
@@ -145,5 +175,5 @@ app.post("/suggestions", async (req, res) => {
 });
 
 app.listen(process.env.PORT || 5000, "0.0.0.0", () => {
-  console.log(`Server started at port ${process.env.PORT || 5000}`);
+  console.log(`Server started at port ${process.env.PORT||5000}`);
 });

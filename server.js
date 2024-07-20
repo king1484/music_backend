@@ -144,6 +144,6 @@ app.post("/suggestions", async (req, res) => {
   res.send(suggestions.slice(0, 10));
 });
 
-app.listen(5000, "0.0.0.0", () => {
-  console.log("Server started at http://localhost:5000");
+app.listen(process.env.PORT || 5000, "0.0.0.0", () => {
+  console.log(`Server started at port ${process.env.PORT || 5000}`);
 });

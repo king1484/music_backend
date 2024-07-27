@@ -41,15 +41,17 @@ router.post("/signin", async (req, res) => {
     if (user) {
       if (bcrypt.compareSync(password, user.password)) {
         const { accessToken, refreshToken } = await generateTokens(email);
-        res.cookie("refreshToken", refreshToken, {
-          httpOnly: true,
-          secure: true,
-          sameSite: "none",
-        }).json({
-          error: false,
-          accessToken: accessToken,
-          message: "User logged in successfully!",
-        });
+        res
+          .cookie("refreshToken", refreshToken, {
+            httpOnly: true,
+            secure: true,
+            sameSite: "none",
+          })
+          .json({
+            error: false,
+            accessToken: accessToken,
+            message: "User logged in successfully!",
+          });
       } else {
         res
           .status(401)
@@ -68,17 +70,18 @@ router.post("/signin", async (req, res) => {
 router.post("/google", async (req, res) => {
   try {
     const { email } = req.body;
-    const { accessToken, refreshToken } = generateTokens(email);
-    res.cookie("refreshToken", refreshToken, {
-      httpOnly: true,
-      secure: true,
-      sameSite: "strict",
-    });
-    res.status(200).json({
-      error: false,
-      accessToken: accessToken,
-      message: "User logged in successfully!",
-    });
+    const { accessToken, refreshToken } = await generateTokens(email);
+    res
+      .cookie("refreshToken", refreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "none",
+      })
+      .json({
+        error: false,
+        accessToken: accessToken,
+        message: "User logged in successfully!",
+      });
   } catch (error) {
     res.status(500).json({ error: true, message: "Internal server error!" });
   }

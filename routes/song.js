@@ -4,6 +4,7 @@ import axios from "axios";
 // import getInfo from "../utils/videoInfo.js";
 import auth from "../middleware/auth.js";
 import ytdl from "@distube/ytdl-core";
+import fs from "fs";
 
 const router = Router();
 
@@ -19,7 +20,8 @@ router.post("/search", auth, async (req, res) => {
 
 router.get("/stream", async (req, res) => {
   const id = req.query.id;
-  const data = await ytdl.getInfo("https://www.youtube.com/watch?v=" + id);
+  const agent = ytdl.createAgent(JSON.parse(fs.readFileSync("cookies.json")))
+  const data = await ytdl.getInfo("https://www.youtube.com/watch?v=" + id, {agent});
   // const adaptiveFormats = data.streamingData.adaptiveFormats;
   const adaptiveFormats = data.formats.filter((f) => f.isHLS === false);
   const sortedAudio = adaptiveFormats

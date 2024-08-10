@@ -19,6 +19,7 @@ router.post("/search", auth, async (req, res) => {
 router.get("/stream", async (req, res) => {
   const id = req.query.id;
   const data = await getInfo(id);
+  console.log(data);
   const sortedAudio = data.streamingData.adaptiveFormats
     .filter((f) => f.mimeType.includes("audio"))
     .sort((a, b) => b.bitrate - a.bitrate);
@@ -29,7 +30,8 @@ router.get("/stream", async (req, res) => {
   }));
   res.setHeader("Content-Type", "audio/mpeg");
   const finalUrl = finalAudios[0].url;
-
+  console.log(finalUrl);
+  
   axios({
     method: "get",
     url: finalUrl,

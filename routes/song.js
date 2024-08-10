@@ -34,9 +34,6 @@ router.get("/stream", async (req, res) => {
   }));
   res.setHeader("Content-Type", "audio/mpeg");
   const finalUrl = finalAudios[0].url;
-  console.log(finalUrl);
-  return;
-  
 
   axios({
     method: "get",

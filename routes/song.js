@@ -23,6 +23,8 @@ router.get("/stream", async (req, res) => {
   // const agent = ytdl.createAgent(JSON.parse(fs.readFileSync("cookies.json")))
   // const data = await ytdl.getInfo("https://www.youtube.com/watch?v=" + id, {agent});
   const data = await getInfo(id);
+  console.log(data);
+  
   const adaptiveFormats = data.streamingData.adaptiveFormats;
   // const adaptiveFormats = data.formats.filter((f) => f.isHLS === false);
   const sortedAudio = adaptiveFormats

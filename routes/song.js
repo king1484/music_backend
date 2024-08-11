@@ -1,9 +1,9 @@
 import { Router } from "express";
 import { searchMusics, getSuggestions } from "node-youtube-music";
 import axios from "axios";
-// import getInfo from "../utils/videoInfo.js";
+import getInfo from "../utils/videoInfo.js";
 import auth from "../middleware/auth.js";
-import ytdl from "@distube/ytdl-core";
+// import ytdl from "@distube/ytdl-core";
 import fs from "fs";
 
 const router = Router();
@@ -20,10 +20,11 @@ router.post("/search", auth, async (req, res) => {
 
 router.get("/stream", async (req, res) => {
   const id = req.query.id;
-  const agent = ytdl.createAgent(JSON.parse(fs.readFileSync("cookies.json")))
-  const data = await ytdl.getInfo("https://www.youtube.com/watch?v=" + id, {agent});
-  // const adaptiveFormats = data.streamingData.adaptiveFormats;
-  const adaptiveFormats = data.formats.filter((f) => f.isHLS === false);
+  // const agent = ytdl.createAgent(JSON.parse(fs.readFileSync("cookies.json")))
+  // const data = await ytdl.getInfo("https://www.youtube.com/watch?v=" + id, {agent});
+  const data = await getInfo(id);
+  const adaptiveFormats = data.streamingData.adaptiveFormats;
+  // const adaptiveFormats = data.formats.filter((f) => f.isHLS === false);
   const sortedAudio = adaptiveFormats
     .filter((f) => f.mimeType.includes("audio"))
     .sort((a, b) => b.bitrate - a.bitrate);

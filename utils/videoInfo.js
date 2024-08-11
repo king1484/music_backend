@@ -1,5 +1,3 @@
-import fs from "fs";
-
 async function getInfo(videoId) {
   const apiKey = "AIzaSyB-63vPrdThhKuerbB2N_l7Kwwcxj6yUAc";
 
@@ -11,12 +9,6 @@ async function getInfo(videoId) {
       "com.google.ios.youtube/19.09.3 (iPhone14,3; U; CPU iOS 15_6 like Mac OS X)",
     "content-type": "application/json",
   };
-
-  const cookiesData = fs.readFileSync("cookies.json", "utf-8");
-  const cookies = JSON.parse(cookiesData);
-  headers["Cookie"] = cookies
-    .map((cookie) => `${cookie.name}=${cookie.value}`)
-    .join("; ");
 
   const b = {
     context: {
@@ -41,7 +33,7 @@ async function getInfo(videoId) {
 
   return fetch(
     `https://www.youtube.com/youtubei/v1/player?key${apiKey}&prettyPrint=false`,
-    { method: "POST", body: JSON.stringify(b), headers, credentials: "include" }
+    { method: "POST", body: JSON.stringify(b), headers }
   ).then((r) => r.json());
 }
 
